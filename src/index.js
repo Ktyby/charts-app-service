@@ -3,7 +3,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const routes = require("./routes");
 const mongoose = require("mongoose");
-const { APP_PORT } = import("./config");
+const { APP_PORT } = require('./config');
 
 const app = express();
 
@@ -16,11 +16,12 @@ app.use(bodyParser.json());
 
 app.use(routes);
 
-mongoose.connect("mongodb://mongo:27017/businessdb")
-  .then(() => {
+mongoose.connect("mongodb://localhost:27017/businessdb", 
+  { useNewUrlParser: true, useUnifiedTopology: true }, function(err){
+    if(err) return console.log(err);
     app.listen(APP_PORT, () => {
       console.info(`App listening on port ${APP_PORT}!`);
     });
-  });
+});
 
 module.exports = app;
