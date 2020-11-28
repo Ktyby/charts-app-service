@@ -16,7 +16,7 @@ app.use(bodyParser.json());
 
 app.use(routes);
 
-mongoose.connect("mongodb://localhost:27017/businessdb", 
+mongoose.connect(process.env.MONGO_URL,
   { useNewUrlParser: true, useUnifiedTopology: true }, function(err){
     if(err) return console.log(err);
     app.listen(APP_PORT, () => {
