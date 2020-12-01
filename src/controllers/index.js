@@ -1,19 +1,61 @@
-const data = require("../db/index");
+const data = require("../models/data");
+const { HTTP_STATUS_CODES } = require("../constants");
 
-async function getDataForChart(req, res) {
-  console.log(req, res)
+const handleCreationDataRequest = async (req, res) => {
+  try {
+    await data.createData(req.body, req.params);
+    res
+      .status(HTTP_STATUS_CODES.OK)
+      .send(req.params)
+  } catch (error) {
+    res
+      .status(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR)
+      .send({ error });
+  }
 }
 
-async function uploadDataForChart(req, res) {
-  console.log(req, res)
+const handleGettingDataRequest = async (req, res) => {
+  try {
+    await data.getData(req.params);
+    res
+      .status(HTTP_STATUS_CODES.OK)
+      .send(req)
+  } catch (error) {
+    res
+      .status(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR)
+      .send({ error });
+  }
 }
 
-async function deleteDataForChart(req, res) {
-  console.log(req, res)
+const handleDeleteDataRequest = async (req, res) => {
+  try {
+    await data.deleteData(req.params.id);
+    res
+      .status(HTTP_STATUS_CODES.OK)
+      .send(req)
+  } catch (error) {
+    res
+      .status(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR)
+      .send({ error });
+  }
+}
+
+const handleUpdateDataRequest = async (req, res) => {
+  try {
+    await data.updateData(req.params);
+    res
+      .status(HTTP_STATUS_CODES.OK)
+      .send(req)
+  } catch (error) {
+    res
+      .status(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR)
+      .send({ error });
+  }
 }
 
 module.exports = {
-  getDataForChart,
-  uploadDataForChart,
-  deleteDataForChart
+  handleCreationDataRequest,
+  handleGettingDataRequest,
+  handleDeleteDataRequest,
+  handleUpdateDataRequest
 }
