@@ -30,24 +30,32 @@ const dimensions = [
 ];
 
 const cube = new olapCubes({ dimensions });
-const dimensionsSchema = new Schema({ id: Number });
+const dimensionsSchema = new Schema({ _id: String }, { strict: false });
 
 const businessData = mongoose.model("businessData", dimensionsSchema);
 
 const createData = (data = {}, id) => {
-  return businessData.create(data, data._id = id);
+  data._id = id;
+  return businessData.create(data);
 }
 
-const getData = (conditions, ) => {
-  const cube = businessData.findOne(conditions);
+const getData = (conditions) => {
+  const fixedCondition = { ...conditions, _id: conditions.id };
+  delete fixedCondition.id;
+  return businessData.find(fixedCondition);
 }
 
 const updateData = (conditions, updatedData) => {
-  return businessData.findOneAndUpdate(conditions, updatedData);
+  console.log(conditions, updatedData);
+  const fixedCondition = { ...conditions, _id: conditions.id };
+  delete fixedCondition.id;
+  return businessData.updateMany(fixedCondition, updatedData);
 }
 
-const deleteData = (id) => {
-  return businessData.findOneAndDelete(id);
+const deleteData = (conditions) => {
+  const fixedCondition = { ...conditions, _id: conditions.id };
+  delete fixedCondition.id;
+  return businessData.deleteOne(fixedCondition);
 }
 
 module.exports = {

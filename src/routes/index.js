@@ -12,9 +12,9 @@ router.delete("/users/:id");
 router.put("/users/:id");
 
 // Data
-router.get("/data/:id", controller.handleGettingDataRequest);
+router.get("/data", controller.handleGettingDataRequest);
 router.post("/data/:id", controller.handleCreationDataRequest);
-router.delete("/data/:id", controller.handleDeleteDataRequest);
-router.put("/data/:id", controller.handleUpdateDataRequest);
+router.delete("/data", controller.handleDeleteDataRequest);
+router.put("/data", controller.handleUpdateDataRequest);
 
 module.exports = router;

@@ -3,10 +3,10 @@ const { HTTP_STATUS_CODES } = require("../constants");
 
 const handleCreationDataRequest = async (req, res) => {
   try {
-    await data.createData(req.body, req.params);
+    const result = await data.createData(req.body, req.params.id);
     res
       .status(HTTP_STATUS_CODES.OK)
-      .send(req.params)
+      .send(result)
   } catch (error) {
     res
       .status(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR)
@@ -16,10 +16,10 @@ const handleCreationDataRequest = async (req, res) => {
 
 const handleGettingDataRequest = async (req, res) => {
   try {
-    await data.getData(req.params);
+    const result = await data.getData(req.query);
     res
       .status(HTTP_STATUS_CODES.OK)
-      .send(req)
+      .send(result)
   } catch (error) {
     res
       .status(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR)
@@ -29,10 +29,10 @@ const handleGettingDataRequest = async (req, res) => {
 
 const handleDeleteDataRequest = async (req, res) => {
   try {
-    await data.deleteData(req.params.id);
+    const result = await data.deleteData(req.query);
     res
       .status(HTTP_STATUS_CODES.OK)
-      .send(req)
+      .send(result)
   } catch (error) {
     res
       .status(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR)
@@ -42,10 +42,10 @@ const handleDeleteDataRequest = async (req, res) => {
 
 const handleUpdateDataRequest = async (req, res) => {
   try {
-    await data.updateData(req.params);
+    const result = await data.updateData(req.query, req.body);
     res
       .status(HTTP_STATUS_CODES.OK)
-      .send(req)
+      .send(result)
   } catch (error) {
     res
       .status(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR)
