@@ -1,42 +1,20 @@
 const mongoose = require("mongoose");
 const olapCubes = require("olap-cube-js");
+const { generateDimensions } = require("../utils");
 const Schema = mongoose.Schema;
 
-const dimensions = [
-  {
-    dimensionTable: {
-      dimension: 'regions',
-      keyProps: ['region'],
-    }
-  },
-  {
-    dimensionTable: {
-      dimension: 'year',
-      keyProps: ['year']
-    }
-  },  
-  {
-    dimensionTable: {
-      dimension: 'month',
-      keyProps: ['month']
-    }
-  },
-  {
-    dimensionTable: {
-      dimension: 'products',
-      keyProps: ['product'],
-    }
-  }
-];
-
-const cube = new olapCubes({ dimensions });
 const dimensionsSchema = new Schema({ _id: String }, { strict: false });
 
 const businessData = mongoose.model("businessData", dimensionsSchema);
 
 const createData = (data = {}, id) => {
-  data._id = id;
-  return businessData.create(data);
+  const dimensions = generateDimensions(data[0]);
+  const cube = new olapCubes({ dimensions });
+  
+  cube.addFacts(data);
+
+  cube._id = id;
+  return businessData.create(cube);
 }
 
 const getData = (conditions) => {
