@@ -22,6 +22,7 @@
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "mongoose": "^5.10.15",
-    "olap-cube-js": "^0.16.1"
+    "olap-cube-js": "^0.16.1",
+    "uuid": "^8.3.1"
   }
 }
