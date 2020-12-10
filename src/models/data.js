@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const OlapCubes = require("olap-cube-js");
+const Cube = require("olap-cube-js");
 const { generateDimensions, addMeasuresId, checkIsValueAndSet } = require("../utils");
 const Schema = mongoose.Schema;
 
@@ -9,13 +9,12 @@ const businessData = mongoose.model("businessData", dimensionsSchema);
 
 const createData = (data = [], valueParameter) => {
   addMeasuresId(data);
-  checkIsValueAndSet(data, valueParameter);
+  checkIsValueAndSet(data, valueParameter); 
 
-  const dimensions = generateDimensions(data[0]);
-  const cube = new OlapCubes({ dimensions });
-  
+  const dimensionHierarchies = generateDimensions(data[0]);
+  const cube = new Cube({ dimensionHierarchies });
   cube.addFacts(data);
-  
+
   return businessData.create({ cube });
 }
 
@@ -27,31 +26,51 @@ const addData = async (data, id, conditions) => {
   checkIsValueAndSet(data, conditions.value);
   
   const [ databaseData ] = await businessData.find(fixedId);
-  const updatedCube = await new OlapCubes(databaseData._doc.cube).addFacts(data);
+  const updatedCube = await new Cube(databaseData._doc.cube).addFacts(data);
 
   await businessData.deleteOne(fixedId);
 
   return await businessData.create({ cube: updatedCube, _id: id });
 }
 
-const getData = (conditions) => {
-  const fixedCondition = { ...conditions, _id: conditions.id };
-  delete fixedCondition.id;
-  return businessData.find(fixedCondition);
+const getData = async (conditions) => {
+  const fixedId = { _id: conditions.id };
+
+  const [ databaseData ] = await businessData.find(fixedId);
+  const cube = await new Cube(databaseData._doc.cube);
+  const member = await cube.getDimensionMembers(conditions.measure)[0];
+  return subCube = await cube.slice(conditions.measure, member);
+
+  // let firstMember = await cube.getDimensionMembers('date')[0]
+  // let secondMember = await cube.getDimensionMembers('region')[0]
+  // let subCube = await cube.dice({ date: firstMember, region: secondMember })
+  // await console.log(subCube);
+
+  // return await subCube;
 }
 
 const updateData = (conditions, updatedData) => {
-  console.log(conditions, updatedData);
   const fixedCondition = { ...conditions, _id: conditions.id };
   delete fixedCondition.id;
   return businessData.updateMany(fixedCondition, updatedData);
 }
 
-const deleteData = (conditions) => {
-  const fixedCondition = { ...conditions, _id: conditions.id };
-  delete fixedCondition.id;
-  return businessData.deleteOne(fixedCondition);
+const deleteData = async (conditions, facts) => {
+  const fixedId = { _id: conditions.id };
+
+  if (!facts) {
+    return businessData.deleteOne(fixedId);
+  }
+
+  const [ databaseData ] = await businessData.find(fixedId);
+  const cube = await new Cube(databaseData._doc.cube);
+  await cube.removeFacts(facts);
+
+  await businessData.deleteOne(fixedId);
+
+  return await businessData.create({ cube, _id: conditions.id });
 }
+  
 
 module.exports = {
   createData,

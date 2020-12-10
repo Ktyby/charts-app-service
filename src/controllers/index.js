@@ -42,7 +42,7 @@ const handleGettingDataRequest = async (req, res) => {
 
 const handleDeleteDataRequest = async (req, res) => {
   try {
-    const result = await data.deleteData(req.query);
+    const result = await data.deleteData(req.query, req.body.facts);
     res
       .status(HTTP_STATUS_CODES.OK)
       .send(result)

@@ -2,12 +2,17 @@ const { v4: uuidv4 } = require('uuid');
 
 const VALUE_NAME = "value";
 
+const deleteArrayItem = (array, element) => {
+  const index = array.indexOf(element);
+  array.splice(index, 1);
+}
+
 const generateDimensions = (data) => {
   const dimensions = [];
 
   const keys = Object.keys(data);
-  keys.shift()
-  keys.pop();  
+  deleteArrayItem(keys, "id");
+  deleteArrayItem(keys, "value");
 
   keys.forEach((element) => {
     dimensions.push({
@@ -25,7 +30,6 @@ const addMeasuresId = (data) => {
   return data.map((element) => {
     if (!element.id) {
       const randomId = uuidv4().split("-").join();    
-
       return element.id = parseInt(randomId, 16);
     }
   });
