@@ -49,7 +49,23 @@ const getData = async (conditions) => {
   // return await subCube;
 }
 
-const updateData = (conditions, updatedData) => {
+const updateFullDocument = (conditions, updatedData) => {
+  // const fixedCondition = { ...conditions, _id: conditions.id };
+  // delete fixedCondition.id;
+
+  const fixedId = { _id: conditions.id };
+
+  addMeasuresId(updatedData);
+  checkIsValueAndSet(updatedData, conditions.value);
+
+  const dimensionHierarchies = generateDimensions(updatedData[0]);
+  const cube = new Cube({ dimensionHierarchies });
+  cube.addFacts(updatedData);
+
+  return businessData.updateOne(fixedId, updatedData);
+}
+
+const updatePartDocument = (conditions, updatedData) => {
   const fixedCondition = { ...conditions, _id: conditions.id };
   delete fixedCondition.id;
   return businessData.updateMany(fixedCondition, updatedData);
@@ -70,12 +86,12 @@ const deleteData = async (conditions, facts) => {
 
   return await businessData.create({ cube, _id: conditions.id });
 }
-  
 
 module.exports = {
   createData,
   addData,
   getData,
-  updateData,
+  updateFullDocument,
+  updatePartDocument,
   deleteData
 }

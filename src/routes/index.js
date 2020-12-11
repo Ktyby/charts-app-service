@@ -14,6 +14,7 @@ router.get("/data", controller.handleGettingDataRequest);
 router.post("/data", controller.handleCreationDataRequest);
 router.post("/data/:id", controller.handleAdditionalDataRequest);
 router.delete("/data", controller.handleDeleteDataRequest);
-router.put("/data", controller.handleUpdateDataRequest);
+router.put("/data", controller.handleUpdateFullDocumentRequest);
+router.patch("/data", controller.handleUpdatePartDocumentRequest);
 
 module.exports = router;

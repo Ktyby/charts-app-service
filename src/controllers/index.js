@@ -53,9 +53,22 @@ const handleDeleteDataRequest = async (req, res) => {
   }
 }
 
-const handleUpdateDataRequest = async (req, res) => {
+const handleUpdateFullDocumentRequest = async (req, res) => {
   try {
-    const result = await data.updateData(req.query, req.body);
+    const result = await data.updateFullDocument(req.query, req.body);
+    res
+      .status(HTTP_STATUS_CODES.OK)
+      .send(result)
+  } catch (error) {
+    res
+      .status(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR)
+      .send({ error });
+  }
+}
+
+const handleUpdatePartDocumentRequest = async (req, res) => {
+  try {
+    const result = await data.updatePartDocument(req.query, req.body);
     res
       .status(HTTP_STATUS_CODES.OK)
       .send(result)
@@ -71,5 +84,6 @@ module.exports = {
   handleAdditionalDataRequest,
   handleGettingDataRequest,
   handleDeleteDataRequest,
-  handleUpdateDataRequest
+  handleUpdateFullDocumentRequest,
+  handleUpdatePartDocumentRequest
 }
