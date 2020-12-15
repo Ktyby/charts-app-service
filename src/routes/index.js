@@ -1,13 +1,45 @@
 const express = require('express');
+const passport = require('passport');
 const controller = require('../controllers/index');
 
 const router = express();
 
 // Users
-router.get("/users/:id");
-router.post("/users");
-router.delete("/users/:id");
-router.put("/users/:id");
+
+const isAuthenticated = (req, res, next) => {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+
+  res.redirect('/');
+}
+
+router.get('/home', isAuthenticated, (req, res) => {
+  res.send("Hello World");
+});
+
+/* Обработка POST-данных авторизации */
+router.post('/login', 
+  passport.authenticate('login', { 
+    successRedirect: '/home',
+    failureRedirect: '/login',
+    failureFlash: true 
+  })
+);
+
+/* Обработка регистрационных POST-данных */
+router.post('/signup', 
+  passport.authenticate('signup', {
+    successRedirect: '/',
+    failureRedirect: '/signup',
+    failureFlash : true 
+  })
+);
+
+router.get('/signout', function(req, res) {
+  req.logout();
+  res.redirect('/');
+});
 
 // Data
 router.get("/data", controller.handleGettingDataRequest);
