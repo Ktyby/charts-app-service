@@ -11,42 +11,49 @@ const isAuthenticated = (req, res, next) => {
     return next();
   }
 
-  res.redirect('/');
+  res.redirect('/main');
 }
+
+router.get("/main", (req, res) => {
+  res.send("you logout");
+});
 
 router.get('/home', isAuthenticated, (req, res) => {
   res.send("Hello World");
 });
 
-/* Обработка POST-данных авторизации */
-router.post('/login', 
-  passport.authenticate('login', { 
+router.post('/login', passport.authenticate('login', { 
     successRedirect: '/home',
     failureRedirect: '/login',
-    failureFlash: true 
-  })
+    failureFlash: true,
+  }), (req, res) => {
+    res.render('index', { message: req.flash('message') });
+  }
 );
 
-/* Обработка регистрационных POST-данных */
-router.post('/signup', 
-  passport.authenticate('signup', {
-    successRedirect: '/',
+router.post('/signup', passport.authenticate('signup', {
+    successRedirect: '/home',
     failureRedirect: '/signup',
-    failureFlash : true 
-  })
+    failureFlash: true,
+  }), (req, res) => {
+    res.render('register',{ message: req.flash('message') });
+  }
 );
 
-router.get('/signout', function(req, res) {
+router.get('/signout', (req, res) => {
   req.logout();
-  res.redirect('/');
+  res.redirect('/main');
 });
 
 // Data
-router.get("/data", controller.handleGettingDataRequest);
-router.post("/data", controller.handleCreationDataRequest);
-router.post("/data/:id", controller.handleAdditionalDataRequest);
-router.delete("/data", controller.handleDeleteDataRequest);
-router.put("/data", controller.handleUpdateFullDocumentRequest);
-router.patch("/data", controller.handleUpdatePartDocumentRequest);
+
+router.get("/measure", isAuthenticated, controller.handleGettingMeasuresRequest)
+router.get("/data/:id", isAuthenticated, controller.handleGettingDataRequest);
+router.get("/data", isAuthenticated, controller.handleGettingAllCubesRequest);
+router.post("/data", isAuthenticated, controller.handleCreationDataRequest);
+router.post("/data/:id", isAuthenticated, controller.handleAdditionalDataRequest);
+router.delete("/data", isAuthenticated, controller.handleDeleteDataRequest);
+router.put("/data", isAuthenticated, controller.handleUpdateFullDocumentRequest);
+router.patch("/data", isAuthenticated, controller.handleUpdatePartDocumentRequest);
 
 module.exports = router;

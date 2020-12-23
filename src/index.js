@@ -2,7 +2,6 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const mongoose = require("mongoose");
-const flash = require('connect-flash');
 const expressSession = require('express-session');
 const cookieParser = require('cookie-parser');
 
@@ -24,6 +23,8 @@ app.use(expressSession({
 const passport = require('passport');
 app.use(passport.initialize());
 app.use(passport.session());
+
+const flash = require('connect-flash');
 app.use(flash());
 
 const initPassport = require('./passport/init');

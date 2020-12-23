@@ -2,23 +2,21 @@ const User = require('../models/users');
 const bCrypt = require('bcrypt-nodejs');
 const LocalStrategy = require('passport-local').Strategy;
 
-module.exports = function(passport){
+module.exports = (passport) => {
 	passport.use('login', new LocalStrategy({
     passReqToCallback : true
   },
-  function(req, username, password, done) { 
+  (req, username, password, done) => { 
     User.findOne({ 'username' :  username }, 
-    function(err, user) {
+    (err, user) => {
+      if (err) return done(err);
 
-      if (err)
-        return done(err);
-
-      if (!user){
-        console.log('User Not Found with username '+username);
+      if (!user) {
+        console.log('User Not Found with username ' + username);
         return done(null, false, req.flash('message', 'User Not found.'));                 
       }
 
-      if (!isValidPassword(user, password)){
+      if (!isValidPassword(user, password)) {
         console.log('Invalid Password');
         return done(null, false, req.flash('message', 'Invalid Password'));
       }
@@ -28,7 +26,7 @@ module.exports = function(passport){
   );
 }));
 
-  var isValidPassword = function(user, password){
+  const isValidPassword = (user, password) => {
     return bCrypt.compareSync(password, user.password);
   }   
 }

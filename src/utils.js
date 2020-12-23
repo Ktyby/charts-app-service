@@ -1,4 +1,5 @@
 const { v4: uuidv4 } = require('uuid');
+const User = require('./models/users');
 
 const VALUE_NAME = "value";
 
@@ -44,8 +45,15 @@ const checkIsValueAndSet = (data, value  = "value") => {
   });
 }
 
+const checkIfIsAccess = async (userId, dataId) => {
+  const [ user ] = await User.find({ _id: userId });
+
+  return user._doc.data.find((index) => toString(index) === toString(dataId));
+}
+
 module.exports = {
   generateDimensions,
   addMeasuresId,
-  checkIsValueAndSet
+  checkIsValueAndSet,
+  checkIfIsAccess
 }
